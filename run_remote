@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Run command through ssh on  a group of remote computers.
+# The neames of the remote computers should be listed in a a separate file.
+
+PROGNAME=$(basename $0)
+function usage() {
+   echo Usage: ${PROGNAME} [-f hostsfile] [-c \"command\"]
+ }
+
+while [ "$1" != "" ]
+do
+   case "$1" in
+      -f) HOSTS=$2; shift 2;;
+      -c) CMD=$2; shift 2;;
+      *) usage; exit;;
+   esac
+done
+
+echo $HOSTS
+echo $CMD
+
+# Load ssh key.
+ssh-add
+
+for host in `cat $HOSTS`
+do
+  echo "Connecting to $host"
+  ssh $host "$CMD"
+done
+
+# Clear ssh keys when done.
+ssh-add -d
+
+exit

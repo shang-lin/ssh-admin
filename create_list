@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# create_list
+# This script creates a list of computers for use by run_remote and copy_keys.
+
+PROGNAME=$(basename $0)
+
+function usage() {
+  echo "usage: ${PROGNAME} filename host1 host2 ..."
+}
+
+if [ $# -lt 2 ]
+then
+  usage
+  exit
+fi
+
+FILE=$1
+shift
+
+while [ "$1" != "" ]
+do
+  echo "$1" | cat >>$FILE
+  shift
+done

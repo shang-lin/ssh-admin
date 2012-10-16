@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# copy keys
+# Copy public key to other computers that are listed in a file.
+
+# Default key.
+KEY=$HOME/.ssh/id_rsa.pub
+
+PROGNAME=$(basename $0)
+
+function usage() {
+  echo "${PROGNAME} [-i publickey_file] <-f hostsfile>"
+}
+
+if [ $# -eq 0 ]
+then
+  usage
+  exit
+fi
+
+#echo $#
+
+while [ "$1" != "" ]
+do
+   case "$1" in
+      -f) HOSTS=$2; shift 2;;
+      -k) KEY=$2; shift 2;;
+      *) usage; exit;;
+   esac
+done
+
+echo "Using hosts file $HOSTS"
+
+for host in `cat $HOSTS`
+do
+  echo "Copying key to $host"
+  ssh-copy-id -i $KEY $host
+done
+
