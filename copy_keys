@@ -1,25 +1,27 @@
 #!/bin/bash
 
 # copy keys
-# Copy public key to other computers that are listed in a file.
+# Copy public key to other computers that are listed in a hosts file.
 
 # Default key.
 KEY=$HOME/.ssh/id_rsa.pub
 
 PROGNAME=$(basename $0)
 
+# Display help message.
 function usage() {
   echo "${PROGNAME} [-i publickey_file] <-f hostsfile>"
 }
 
+# Check that command-line arguments are provided.
 if [ $# -eq 0 ]
 then
+  echo "no arguments"
   usage
   exit
 fi
 
-#echo $#
-
+# Parse command-line arguments.
 while [ "$1" != "" ]
 do
    case "$1" in
@@ -29,8 +31,15 @@ do
    esac
 done
 
+if [ ! -f $KEY ]
+then
+  echo "Public key $KEY does not exist."
+  exit
+fi
+
 echo "Using hosts file $HOSTS"
 
+# Iterate through the hosts, and copy the key to each host.
 for host in `cat $HOSTS`
 do
   echo "Copying key to $host"
