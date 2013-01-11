@@ -1,35 +1,76 @@
 #!/bin/bash
 
-# Run command through ssh on  a group of remote computers.
-# The neames of the remote computers should be listed in a a separate file.
+# This script executes commands on one or more remote servers.
+# The hostnamesneames of the remote computers are listed in a file passed as a command-line
+# argument. 
+
+# author: Shang-Lin Chen
+# created: Oct 22, 2012
+
+SSH_ADD=ssh-add
+SSH="ssh -t -t -t"    # The "-t" flags prevent the user's sudo password from being displayed in
+                      # plain text.
+SUDO=""
+SUDO_CMD="sudo -S"    # Generic sudo command.
 
 PROGNAME=$(basename $0)
+
 function usage() {
-   echo Usage: ${PROGNAME} [-f hostsfile] [-c \"command\"]
+   cat<<EOM
+
+Usage: ${PROGNAME} [options] [-f hostsfile] [-c \"command\"]
+Options: 
+   -s: Indicates that the command should be run with sudo.
+
+Arguments:
+   -f: Precedes the name of the file listing the hosts where the command will be run.
+       Host files are stored in the hosts directory. The directory path should not be included
+       on the command line.
+
+EOM
  }
+
+if [ "$1" == "" ]
+then
+  usage
+  exit
+fi
 
 while [ "$1" != "" ]
 do
    case "$1" in
-      -f) HOSTS=$2; shift 2;;
+      -f) HOSTS="hosts/$2"; shift 2;;
       -c) CMD=$2; shift 2;;
+      -s) SUDO=${SUDO_CMD}; shift;;
       *) usage; exit;;
    esac
 done
 
-echo $HOSTS
-echo $CMD
+#echo $HOSTS
+#echo $CMD
 
 # Load ssh key.
-ssh-add
+${SSH_ADD}
+
+cat <<EOM
+
+=============================
+command: $CMD 
+=============================
+
+EOM
 
 for host in `cat $HOSTS`
 do
-  echo "Connecting to $host"
-  ssh $host "$CMD"
+  echo "Connecting to $host. Running command."
+  echo
+  $SSH $host "$SUDO $CMD"
+  echo  
+  echo "Completed $host."
+  echo
 done
 
 # Clear ssh keys when done.
-ssh-add -d
+${SSH_ADD} -d
 
 exit
