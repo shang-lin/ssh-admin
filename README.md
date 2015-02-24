@@ -1,4 +1,6 @@
 ssh-admin
 =========
 
-Scripts I use for doing administration of groups of servers over ssh without have to log in to each one.
+ssh-admin is a collection of scripts that for running commands on or copying files to clusters
+of Linux or Unix servers over ssh without having to log in to each one. 
+
