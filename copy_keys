@@ -7,6 +7,7 @@
 KEY=$HOME/.ssh/id_rsa.pub
 
 PROGNAME=$(basename $0)
+HOSTS=""
 
 # Display help message.
 function usage() {
@@ -25,8 +26,9 @@ fi
 while [ "$1" != "" ]
 do
    case "$1" in
-      -f) HOSTS=$2; shift 2;;
+      -hf) HOSTSFILE=$2; shift 2;;
       -k) KEY=$2; shift 2;;
+      -h) HOSTS="$HOSTS $2"; shift 2;;
       *) usage; exit;;
    esac
 done
@@ -37,10 +39,15 @@ then
   exit
 fi
 
-echo "Using hosts file $HOSTS"
+echo "Using hosts file $HOSTSFILE"
+
+if [ -f $HOSTSFILE ]
+then
+  HOSTS="$HOSTS `cat $HOSTSFILE`"
+fi
 
 # Iterate through the hosts, and copy the key to each host.
-for host in `cat $HOSTS`
+for host in $HOSTS
 do
   echo "Copying key to $host"
   ssh-copy-id -i $KEY $host
