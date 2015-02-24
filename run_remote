@@ -1,8 +1,6 @@
 #!/bin/bash
 
 # This script executes commands on one or more remote servers.
-# The hostnamesneames of the remote computers are listed in a file passed as a command-line
-# argument. 
 
 # author: Shang-Lin Chen
 # created: Oct 22, 2012
